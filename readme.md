@@ -10,7 +10,7 @@ It's configuration for docker-compose with images Apache + php5.3, mysql, mariad
 # Installation
 
 * Just clone it into any directory 
-* Edit option MAIN_WEB_ROOT_PATH and another options in docker-compose.yml
+* Edit option MAIN_WEB_ROOT_PATH and another options in .env file
 * Add virtual host configuration for Apache into main/sites folder. Use example file in it
 * Add your local domains in /etc/hosts
 * Run docker-compose "up" command:

@@ -1,0 +1,72 @@
+version: '2'
+
+services:
+
+
+### MariaDB Container #######################################
+
+    mariadb:
+      build: ./mariadb
+      volumes:
+        - ${DATA_SAVE_PATH}/mariadb:/var/lib/mysql
+        - ${MARIADB_ENTRYPOINT_INITDB}:/docker-entrypoint-initdb.d
+      ports:
+        - "${MARIADB_PORT}:3306"
+      environment:
+        - MYSQL_DATABASE=${MARIADB_DATABASE}
+        - MYSQL_USER=${MARIADB_USER}
+        - MYSQL_PASSWORD=${MARIADB_PASSWORD}
+        - MYSQL_ROOT_PASSWORD=${MARIADB_ROOT_PASSWORD}
+      networks:
+        - backend
+        
+### MySQL Container #########################################
+
+    mysql:
+      build:
+        context: ./mysql
+        args:
+          - MYSQL_VERSION=${MYSQL_VERSION}
+      environment:
+        - MYSQL_DATABASE=${MYSQL_DATABASE}
+        - MYSQL_USER=${MYSQL_USER}
+        - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+        - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+        - TZ=${WORKSPACE_TIMEZONE}
+      volumes:
+        - ${DATA_SAVE_PATH}/mysql:/var/lib/mysql
+        - ${MYSQL_ENTRYPOINT_INITDB}:/docker-entrypoint-initdb.d
+      ports:
+        - "${MYSQL_PORT}:3306"
+      user: "1000:50"
+      networks:
+        - backend
+
+        
+### Main Container (apache, php) ##############################
+
+    main:
+      build: ./main
+      volumes:
+        - ${MAIN_WEB_ROOT_PATH}:/var/www
+        - ./share:/root/share
+      ports:
+        - "${MAIN_WEB_HTTP_PORT}:80"  
+      environment:
+        - PHP_ERROR_REPORTING=${MAIN_PHP_ERROR_REPORTING}
+      networks:
+        - backend  
+        
+### Networks Setup ############################################
+
+networks:
+  backend:
+    driver: "bridge"
+
+### Volumes Setup #############################################
+
+volumes:
+  mariadb:
+    driver: "local"
+  mysql:
+    driver: "local"

@@ -59,6 +59,8 @@ COPY run /usr/local/bin/run
 RUN chmod +x /usr/local/bin/run
 # mod_rewrite
 RUN a2enmod rewrite
+# mod_version
+RUN a2enmod version
 
 EXPOSE 80
 CMD ["/usr/local/bin/run"]
